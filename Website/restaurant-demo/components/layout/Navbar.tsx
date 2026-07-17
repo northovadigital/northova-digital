@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import Container from "@/components/common/Container";
 
@@ -16,11 +15,15 @@ const navigationLinks = [
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-black/10 bg-[var(--cream)]">
       <Container>
         <div className="flex h-20 items-center justify-between">
-          <Link href="#home">
+          <a href="#home" onClick={closeMenu}>
             <span className="block text-2xl font-bold text-[var(--primary)]">
               Bella Vista
             </span>
@@ -28,74 +31,79 @@ export default function Navbar() {
             <span className="block text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
               Italian Kitchen
             </span>
-          </Link>
+          </a>
 
           <nav className="hidden items-center gap-8 lg:flex">
             {navigationLinks.map((link) => (
-              <Link
+              <a
                 key={link.label}
                 href={link.href}
                 className="text-sm font-medium hover:text-[var(--accent)]"
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
           </nav>
 
           <div className="hidden items-center gap-3 lg:flex">
-            <Link
+            <a
               href="#order"
-              className="rounded-full border border-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-[var(--primary)]"
+              className="rounded-full border border-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-[var(--primary)] hover:bg-[var(--primary)] hover:text-white"
             >
               Order Online
-            </Link>
+            </a>
 
-            <Link
+            <a
               href="#reservation"
-              className="rounded-full bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-white"
+              className="rounded-full bg-[var(--primary)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[var(--primary-dark)]"
             >
               Reserve Table
-            </Link>
+            </a>
           </div>
 
           <button
             type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setIsMenuOpen((current) => !current)}
             className="rounded-lg p-2 text-[var(--primary)] lg:hidden"
             aria-label="Toggle navigation menu"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
         </div>
 
         {isMenuOpen && (
-          <nav className="flex flex-col gap-4 border-t border-black/10 py-5 lg:hidden">
+          <nav
+            id="mobile-navigation"
+            className="flex flex-col gap-4 border-t border-black/10 py-5 lg:hidden"
+          >
             {navigationLinks.map((link) => (
-              <Link
+              <a
                 key={link.label}
                 href={link.href}
-                onClick={() => setIsMenuOpen(false)}
-                className="text-sm font-medium"
+                onClick={closeMenu}
+                className="text-sm font-medium hover:text-[var(--accent)]"
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
 
-            <Link
+            <a
               href="#order"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-full border border-[var(--primary)] px-5 py-3 text-center text-sm font-semibold text-[var(--primary)]"
+              onClick={closeMenu}
+              className="mt-2 rounded-full border border-[var(--primary)] px-5 py-3 text-center text-sm font-semibold text-[var(--primary)]"
             >
               Order Online
-            </Link>
+            </a>
 
-            <Link
+            <a
               href="#reservation"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="rounded-full bg-[var(--primary)] px-5 py-3 text-center text-sm font-semibold text-white"
             >
               Reserve Table
-            </Link>
+            </a>
           </nav>
         )}
       </Container>
