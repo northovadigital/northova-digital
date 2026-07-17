@@ -4,6 +4,7 @@ import About from "@/components/sections/About";
 import FeaturedMenu from "@/components/sections/FeaturedMenu";
 import Gallery from "@/components/sections/Gallery";
 import Testimonials from "@/components/sections/Testimonials";
+import Reservation from "@/components/sections/Reservation";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,7 @@ export default function HomePage() {
         <FeaturedMenu />
         <Gallery />
         <Testimonials />
+        <Reservation />
       </main>
     </>
   );
