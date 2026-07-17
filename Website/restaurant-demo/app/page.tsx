@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import FeaturedMenu from "@/components/sections/FeaturedMenu";
+import Gallery from "@/components/sections/Gallery";
 
 export default function HomePage() {
   return (
@@ -12,6 +13,7 @@ export default function HomePage() {
         <Hero />
         <About />
         <FeaturedMenu />
+        <Gallery />
       </main>
     </>
   );
