@@ -7,15 +7,50 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
+const playfairDisplay = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Bella Vista Italian Kitchen",
+  title: {
+    default: "Bella Vista Italian Kitchen | Houston, TX",
+    template: "%s | Bella Vista Italian Kitchen",
+  },
   description:
-    "A premium restaurant website demo created by Northova Digital.",
+    "Experience authentic Italian cuisine, fresh ingredients and warm hospitality at Bella Vista Italian Kitchen in Houston, Texas.",
+  keywords: [
+    "Italian restaurant Houston",
+    "Bella Vista Italian Kitchen",
+    "Italian food Houston",
+    "restaurant reservations Houston",
+    "Italian delivery Houston",
+  ],
+  authors: [
+    {
+      name: "Bella Vista Italian Kitchen",
+    },
+  ],
+  creator: "Bella Vista Italian Kitchen",
+  publisher: "Bella Vista Italian Kitchen",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Bella Vista Italian Kitchen | Houston, TX",
+    description:
+      "Authentic Italian cuisine, fresh ingredients and memorable dining experiences in Houston.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Bella Vista Italian Kitchen",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bella Vista Italian Kitchen | Houston, TX",
+    description:
+      "Authentic Italian cuisine and warm hospitality in Houston, Texas.",
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +60,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable}`}>
+      <body
+        className={`${inter.variable} ${playfairDisplay.variable} antialiased`}
+      >
         {children}
       </body>
     </html>
