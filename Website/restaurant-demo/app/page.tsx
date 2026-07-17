@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import RestaurantJsonLd from "@/components/seo/RestaurantJsonLd";
 import Hero from "@/components/sections/Hero";
 import About from "@/components/sections/About";
 import FeaturedMenu from "@/components/sections/FeaturedMenu";
@@ -12,6 +13,7 @@ import Contact from "@/components/sections/Contact";
 export default function HomePage() {
   return (
     <>
+      <RestaurantJsonLd />
       <Navbar />
 
       <main>
