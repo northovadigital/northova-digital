@@ -19,6 +19,7 @@ export default function Footer() {
           <div>
             <a href="#home">
               <span className="block text-2xl font-bold">Bella Vista</span>
+
               <span className="mt-1 block text-xs uppercase tracking-[0.2em] text-[var(--accent)]">
                 Italian Kitchen
               </span>
@@ -80,7 +81,15 @@ export default function Footer() {
         </div>
 
         <div className="pt-7 text-center text-sm text-white/55">
-          © {currentYear} Bella Vista Italian Kitchen. All rights reserved.
+          <p>
+            © {currentYear} Bella Vista Italian Kitchen. All rights reserved.
+          </p>
+
+          <p className="mt-2">
+            Concept website created by{" "}
+            <span className="font-medium text-white/75">Northova Digital</span>.
+            Demo content only.
+          </p>
         </div>
       </Container>
     </footer>
