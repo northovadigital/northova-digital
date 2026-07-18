@@ -26,3 +26,6 @@ Thumbs.db
 *.key
 *.p12
 .ssh/
+
+# Microsoft Office temporary files
+~$*
