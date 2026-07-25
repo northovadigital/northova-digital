@@ -29,3 +29,11 @@ Thumbs.db
 
 # Microsoft Office temporary files
 ~$*
+
+# Restaurant Lead Engine
+LeadGeneration/restaurant-lead-engine/.venv/
+LeadGeneration/restaurant-lead-engine/**/__pycache__/
+LeadGeneration/restaurant-lead-engine/**/*.pyc
+LeadGeneration/restaurant-lead-engine/.env
+LeadGeneration/restaurant-lead-engine/output/*.csv
+LeadGeneration/restaurant-lead-engine/output/*.xlsx

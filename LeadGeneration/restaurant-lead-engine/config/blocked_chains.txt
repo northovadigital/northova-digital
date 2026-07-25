@@ -1,0 +1,33 @@
+# Large national restaurant chains
+
+mcdonald's
+starbucks
+subway
+domino's
+pizza hut
+kfc
+burger king
+taco bell
+wendy's
+chick-fil-a
+whataburger
+jack in the box
+sonic
+popeyes
+chipotle
+panera bread
+dunkin
+ihop
+denny's
+applebee's
+chili's
+olive garden
+buffalo wild wings
+wingstop
+five guys
+dairy queen
+little caesars
+papa john's
+raising cane's
+cracker barrel
+arby's
