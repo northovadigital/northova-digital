@@ -63,7 +63,10 @@ def main() -> int:
     print(f"Searching businesses in: {args.location}")
 
     try:
-        raw_elements = fetch_businesses(args.location)
+        raw_elements = fetch_businesses(
+            args.location,
+            limit=args.limit,
+        )
     except ExtractionError as exc:
         print(f"\nExtraction failed:\n{exc}", file=sys.stderr)
         return 1
@@ -108,10 +111,7 @@ def main() -> int:
         if record.get("category") in target_categories
     ]
 
-    print(
-        "Restaurant-category records: "
-        f"{len(category_records)}"
-    )
+    print(f"Restaurant-category records: {len(category_records)}")
 
     def calculate_data_quality(record: dict) -> int:
         score = 0

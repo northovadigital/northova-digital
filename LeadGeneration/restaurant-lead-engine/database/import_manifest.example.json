@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "description": "Copy this file to database/import_manifest.json and configure local historical CSV batches.",
+  "batches": []
+}
