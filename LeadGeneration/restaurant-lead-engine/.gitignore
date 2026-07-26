@@ -1,0 +1,39 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python environments and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Generated lead data and runtime files
+output/*
+!output/.gitkeep
+
+# Logs
+*.log
+
+# Local database exports and backups
+*.dump
+*.backup
+*.sql.gz
+
+# Editor settings
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local historical-import configuration
+database/import_manifest.json
+database/*.backup*
