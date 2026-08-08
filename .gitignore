@@ -37,3 +37,6 @@ LeadGeneration/restaurant-lead-engine/**/*.pyc
 LeadGeneration/restaurant-lead-engine/.env
 LeadGeneration/restaurant-lead-engine/output/*.csv
 LeadGeneration/restaurant-lead-engine/output/*.xlsx
+
+# Local agency UI backups
+Website/agency_ui_backups/
