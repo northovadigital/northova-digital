@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
 import Link from "next/link";
 import { HeroVisual } from "@/components/motion/HeroVisual";
 import { Reveal } from "@/components/motion/Reveal";
@@ -16,42 +17,35 @@ export function Hero() {
             <div className="v2-hero-badge">
               <span className="v2-badge-dot" />
               USA-focused digital studio
-              <span className="v2-badge-arrow">↗</span>
+              <span className="v2-badge-arrow">
+                <ArrowUpRight className="v2-arrow-icon" />
+              </span>
             </div>
           </Reveal>
 
           <Reveal delay={90}>
             <h1>
               Build a digital presence
-              <span>
-                people trust.
-              </span>
+              <span>people trust.</span>
             </h1>
           </Reveal>
 
           <Reveal delay={170}>
             <p className="v2-hero-description">
-              Strategy-led websites for U.S. businesses
-              that need to look credible, communicate
-              clearly and turn more visitors into
+              Strategy-led websites for U.S. businesses that need to look
+              credible, communicate clearly and turn more visitors into
               opportunities.
             </p>
           </Reveal>
 
           <Reveal delay={250}>
             <div className="v2-hero-actions">
-              <Link
-                className="v2-button v2-button-primary"
-                href="#contact"
-              >
+              <Link className="v2-button v2-button-primary" href="#contact">
                 Get My Free Website Review
-                <span>↗</span>
+                <ArrowUpRight className="v2-arrow-icon" />
               </Link>
 
-              <Link
-                className="v2-button v2-button-secondary"
-                href="#work"
-              >
+              <Link className="v2-button v2-button-secondary" href="#work">
                 See Our Work
                 <span>↓</span>
               </Link>
@@ -67,32 +61,22 @@ export function Hero() {
               </div>
 
               <div>
-                <strong>
-                  Strategy + design + development
-                </strong>
+                <strong>Strategy + design + development</strong>
 
-                <p>
-                  One focused process from idea to launch.
-                </p>
+                <p>One focused process from idea to launch.</p>
               </div>
             </div>
           </Reveal>
         </div>
 
-        <Reveal
-          className="v2-hero-visual-reveal"
-          delay={220}
-        >
+        <Reveal className="v2-hero-visual-reveal" delay={220}>
           <HeroVisual />
         </Reveal>
       </div>
 
       <div className="v2-hero-trust">
         <div className="shell v2-trust-inner">
-          <p>
-            Built around what modern businesses actually
-            need
-          </p>
+          <p>Built around what modern businesses actually need</p>
 
           <div className="v2-trust-items">
             <span>

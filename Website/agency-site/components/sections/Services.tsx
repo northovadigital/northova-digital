@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 
@@ -28,7 +29,7 @@ const services = [
   },
   {
     number: "04",
-    symbol: "↗",
+    symbol: <ArrowUpRight className="v2-arrow-icon" />,
     title: "Landing Pages",
     description:
       "Focused pages for campaigns, services and offers where every section supports one meaningful customer action.",
@@ -81,7 +82,9 @@ export function Services() {
 
               <Link href="#contact">
                 Discuss your project
-                <span>↗</span>
+                <span>
+                  <ArrowUpRight className="v2-arrow-icon" />
+                </span>
               </Link>
             </div>
           </Reveal>

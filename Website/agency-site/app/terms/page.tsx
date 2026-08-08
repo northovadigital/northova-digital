@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -30,7 +31,9 @@ export default function TermsPage() {
 
           <Link className="legal-home-link" href="/">
             Back to home
-            <span>↗</span>
+            <span>
+              <ArrowUpRight className="v2-arrow-icon" />
+            </span>
           </Link>
         </div>
       </header>

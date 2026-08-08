@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
 import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 
@@ -46,8 +47,7 @@ export function Problems() {
         <div className="v2-problems-heading">
           <Reveal>
             <h2>
-              Your website should be a
-              <span> business asset,</span>
+              Your website should be a<span> business asset,</span>
               <br />
               not just an online brochure.
             </h2>
@@ -56,14 +56,15 @@ export function Problems() {
           <Reveal delay={100}>
             <div className="v2-problems-intro">
               <p>
-                Customers make fast decisions online.
-                We design around the moments that shape
-                trust, clarity and action.
+                Customers make fast decisions online. We design around the
+                moments that shape trust, clarity and action.
               </p>
 
               <Link href="#contact">
                 Find out what your website is missing
-                <span>↗</span>
+                <span>
+                  <ArrowUpRight className="v2-arrow-icon" />
+                </span>
               </Link>
             </div>
           </Reveal>
@@ -71,19 +72,12 @@ export function Problems() {
 
         <div className="v2-problem-grid">
           {problems.map((problem, index) => (
-            <Reveal
-              key={problem.number}
-              delay={index * 80}
-            >
+            <Reveal key={problem.number} delay={index * 80}>
               <article className="v2-problem-card">
                 <div className="v2-problem-top">
-                  <span className="v2-problem-number">
-                    {problem.number}
-                  </span>
+                  <span className="v2-problem-number">{problem.number}</span>
 
-                  <span className="v2-problem-tag">
-                    {problem.tag}
-                  </span>
+                  <span className="v2-problem-tag">{problem.tag}</span>
                 </div>
 
                 <div className="v2-problem-icon">

@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
+
 import { FormEvent, useState } from "react";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
@@ -200,7 +202,13 @@ export function FinalCta() {
               : status === "success"
                 ? "Request Received"
                 : "Request My Free Website Review"}
-            <span>{status === "success" ? "✓" : "↗"}</span>
+            <span>
+              {status === "success" ? (
+                "✓"
+              ) : (
+                <ArrowUpRight className="v2-arrow-icon" />
+              )}
+            </span>
           </button>
 
           <p
