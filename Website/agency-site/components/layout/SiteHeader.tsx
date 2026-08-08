@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -46,7 +48,9 @@ export function SiteHeader() {
         <div className="v2-header-actions">
           <Link className="v2-header-cta" href="#contact">
             Free Website Review
-            <span>↗</span>
+            <span>
+              <ArrowUpRight className="v2-arrow-icon" />
+            </span>
           </Link>
 
           <button
@@ -56,8 +60,14 @@ export function SiteHeader() {
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((current) => !current)}
           >
-            <span />
-            <span />
+            <svg
+              className="v2-mobile-menu-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M5 8H19" />
+              <path d="M5 16H19" />
+            </svg>
           </button>
         </div>
       </div>
@@ -84,7 +94,9 @@ export function SiteHeader() {
             onClick={() => setMenuOpen(false)}
           >
             Get a Free Website Review
-            <span>↗</span>
+            <span>
+              <ArrowUpRight className="v2-arrow-icon" />
+            </span>
           </Link>
         </div>
       </div>

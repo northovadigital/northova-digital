@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
 export function HeroVisual() {
   return (
     <div className="v2-hero-visual" aria-hidden="true">
@@ -76,7 +77,9 @@ export function HeroVisual() {
       </div>
 
       <div className="v2-floating-card v2-floating-card-performance">
-        <span className="v2-card-icon">↗</span>
+        <span className="v2-card-icon">
+          <ArrowUpRight className="v2-arrow-icon" />
+        </span>
 
         <div>
           <small>Experience</small>

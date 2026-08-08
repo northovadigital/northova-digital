@@ -1,3 +1,4 @@
+import { ArrowUpRight } from "@/components/icons/ArrowUpRight";
 import Image from "next/image";
 import { Reveal } from "@/components/motion/Reveal";
 
@@ -81,7 +82,9 @@ export function Work() {
                 rel="noreferrer"
               >
                 View Live Concept
-                <span aria-hidden="true">↗</span>
+                <span aria-hidden="true">
+                  <ArrowUpRight className="v2-arrow-icon" />
+                </span>
               </a>
 
               <div className="v2-work-disclosure">
