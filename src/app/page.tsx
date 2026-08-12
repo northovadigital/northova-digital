@@ -1,25 +1,27 @@
-import { storeConfig } from "@/config/store";
+import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
+import { SiteFooter } from "@/components/layout/SiteFooter";
+import { SiteHeader } from "@/components/layout/SiteHeader";
+import { BrandStory } from "@/components/storefront/BrandStory";
+import { CategoryGrid } from "@/components/storefront/CategoryGrid";
+import { Hero } from "@/components/storefront/Hero";
+import { NewArrivals } from "@/components/storefront/NewArrivals";
+import { TrustStrip } from "@/components/storefront/TrustStrip";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-neutral-50 px-6">
-      <div className="max-w-xl text-center">
-        <p className="mb-3 text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
-          {storeConfig.city}, {storeConfig.country}
-        </p>
+    <>
+      <AnnouncementBar />
+      <SiteHeader />
 
-        <h1 className="text-4xl font-semibold tracking-tight text-neutral-950 sm:text-5xl">
-          {storeConfig.name}
-        </h1>
+      <main>
+        <Hero />
+        <TrustStrip />
+        <CategoryGrid />
+        <NewArrivals />
+        <BrandStory />
+      </main>
 
-        <p className="mt-5 text-base leading-7 text-neutral-600 sm:text-lg">
-          {storeConfig.description}
-        </p>
-
-        <p className="mt-8 text-sm text-neutral-400">
-          Storefront development in progress.
-        </p>
-      </div>
-    </main>
+      <SiteFooter />
+    </>
   );
 }
