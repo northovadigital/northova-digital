@@ -10,6 +10,8 @@ export type ProductVariant = {
   id: string;
   size?: string;
   color?: string;
+  volumeMl?: number;
+  price?: number;
   stock: number;
 };
 

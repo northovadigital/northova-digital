@@ -31,8 +31,16 @@ export const featuredProducts: Product[] = [
     images: [],
     variants: [
       {
-        id: "fk-fragrance-001-default",
+        id: "fk-fragrance-001-50ml",
+        volumeMl: 50,
+        price: 3950,
         stock: 5,
+      },
+      {
+        id: "fk-fragrance-001-100ml",
+        volumeMl: 100,
+        price: 6750,
+        stock: 3,
       },
     ],
     status: "active",
@@ -71,16 +79,19 @@ export const featuredProducts: Product[] = [
       {
         id: "fk-fashion-002-small",
         size: "S",
+        price: 7850,
         stock: 1,
       },
       {
         id: "fk-fashion-002-medium",
         size: "M",
+        price: 7850,
         stock: 2,
       },
       {
         id: "fk-fashion-002-large",
         size: "L",
+        price: 7850,
         stock: 1,
       },
     ],
@@ -99,8 +110,16 @@ export const featuredProducts: Product[] = [
     images: [],
     variants: [
       {
-        id: "fk-fragrance-002-default",
+        id: "fk-fragrance-002-50ml",
+        volumeMl: 50,
+        price: 2950,
         stock: 6,
+      },
+      {
+        id: "fk-fragrance-002-100ml",
+        volumeMl: 100,
+        price: 4950,
+        stock: 4,
       },
     ],
     status: "active",

@@ -22,6 +22,7 @@ export type OrderItem = {
   variantId?: string;
   size?: string;
   color?: string;
+  volumeMl?: number;
   quantity: number;
   unitPrice: number;
 };

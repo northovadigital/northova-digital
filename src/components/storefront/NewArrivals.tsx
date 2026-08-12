@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { ProductVisual } from "@/components/storefront/ProductVisual";
 import { featuredProducts } from "@/data/products";
-import { formatPrice } from "@/lib/currency";
+import { getProductDisplayPrice } from "@/lib/product";
 
 const categoryLabels: Record<string, string> = {
   fashion: "Women's Fashion",
@@ -66,7 +66,7 @@ export function NewArrivals() {
                   </h3>
 
                   <p className="shrink-0 text-sm font-semibold text-[#332d27]">
-                    {formatPrice(product.price)}
+                    {getProductDisplayPrice(product)}
                   </p>
                 </div>
 
