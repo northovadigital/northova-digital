@@ -1,6 +1,7 @@
 type ProductVisualProps = {
   category: string;
   variantKey?: string;
+  compact?: boolean;
 };
 
 function getVariant(value: string): number {
@@ -13,8 +14,12 @@ function getVariant(value: string): number {
 export function ProductVisual({
   category,
   variantKey = category,
+  compact = false,
 }: ProductVisualProps) {
   const variant = getVariant(variantKey);
+  const minHeightClass = compact
+    ? "min-h-[170px]"
+    : "min-h-[310px]";
 
   if (category === "fashion") {
     const backgrounds = [
@@ -32,7 +37,7 @@ export function ProductVisual({
     return (
       <div
         aria-hidden="true"
-        className={`relative h-full min-h-[310px] overflow-hidden ${backgrounds[variant]}`}
+        className={`relative h-full ${minHeightClass} overflow-hidden ${backgrounds[variant]}`}
       >
         <div
           className={`absolute ${accentPositions[variant]} h-[45%] w-[24%] -rotate-12 border border-[#817566]/20 bg-white/10`}
@@ -67,7 +72,7 @@ export function ProductVisual({
     return (
       <div
         aria-hidden="true"
-        className={`relative h-full min-h-[310px] overflow-hidden ${backgrounds[variant]}`}
+        className={`relative h-full ${minHeightClass} overflow-hidden ${backgrounds[variant]}`}
       >
         <div className="absolute left-1/2 top-[18%] h-12 w-20 -translate-x-1/2 border border-[#c6ae86]/40 bg-white/5" />
 
@@ -103,7 +108,7 @@ export function ProductVisual({
   return (
     <div
       aria-hidden="true"
-      className={`relative h-full min-h-[310px] overflow-hidden ${backgrounds[variant]}`}
+      className={`relative h-full ${minHeightClass} overflow-hidden ${backgrounds[variant]}`}
     >
       <div
         className={`absolute left-1/2 top-[20%] h-[26%] w-[55%] -translate-x-1/2 border border-white/40 bg-white/10 ${rotations[variant]}`}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CartLink } from "@/components/cart/CartLink";
 import { storeConfig } from "@/config/store";
 
 const navigation = [
@@ -49,12 +50,7 @@ export function SiteHeader() {
             Shop
           </Link>
 
-          <Link
-            href="/cart"
-            className="inline-flex min-h-11 items-center justify-center rounded-full bg-[#181512] px-5 text-sm font-medium text-white transition hover:bg-[#35302b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9a7c50]"
-          >
-            Cart · 0
-          </Link>
+          <CartLink />
 
           <details className="group relative lg:hidden">
             <summary className="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-full border border-[#cfc5b6] text-[#211d19] [&::-webkit-details-marker]:hidden">

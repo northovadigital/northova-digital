@@ -103,6 +103,9 @@ export default async function ProductPage({
 
               <div className="mt-8">
                 <ProductVariantSelector
+                  productId={product.id}
+                  slug={product.slug}
+                  name={product.name}
                   category={product.category}
                   basePrice={product.price}
                   variants={product.variants}
@@ -139,16 +142,6 @@ export default async function ProductPage({
                 </div>
               </div>
 
-              <div className="mt-8 rounded-lg bg-[#ebe5db] p-5">
-                <p className="text-sm font-semibold text-[#332d27]">
-                  Ordering through cart is the next step.
-                </p>
-
-                <p className="mt-1 text-xs leading-5 text-[#756d65]">
-                  Product selection is ready. Cart and COD checkout will be
-                  connected in the next development phase.
-                </p>
-              </div>
 
               <Link
                 href="/shop"

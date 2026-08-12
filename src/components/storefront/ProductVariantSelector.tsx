@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 
+import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/currency";
 import type { ProductVariant } from "@/types/product";
 
 type ProductVariantSelectorProps = {
+  productId: string;
+  slug: string;
+  name: string;
   category: string;
   basePrice: number;
   variants: ProductVariant[];
@@ -22,25 +26,27 @@ function getVariantLabel(
     return variant.size;
   }
 
-  if (variant.color) {
-    return variant.color;
-  }
-
   return null;
 }
 
 export function ProductVariantSelector({
+  productId,
+  slug,
+  name,
   category,
   basePrice,
   variants,
 }: ProductVariantSelectorProps) {
+  const { addItem, items } = useCart();
+
   const initialVariant =
     variants.find((variant) => variant.stock > 0) ??
     variants[0];
 
-  const [selectedVariantId, setSelectedVariantId] = useState(
-    initialVariant?.id ?? "",
-  );
+  const [selectedVariantId, setSelectedVariantId] =
+    useState(initialVariant?.id ?? "");
+
+  const [added, setAdded] = useState(false);
 
   const selectedVariant =
     variants.find(
@@ -57,10 +63,60 @@ export function ProductVariantSelector({
   const selectedStock =
     selectedVariant?.stock ?? 0;
 
+  const selectedCartKey = selectedVariant
+    ? `${productId}:${selectedVariant.id}`
+    : "";
+
+  const quantityInCart =
+    items.find((item) => item.key === selectedCartKey)
+      ?.quantity ?? 0;
+
+  const stockLimitReached =
+    selectedStock > 0 &&
+    quantityInCart >= selectedStock;
+
   const selectorLabel =
     category === "fragrances"
       ? "Bottle size"
       : "Select size";
+
+  function handleAddToCart() {
+    if (
+      !selectedVariant ||
+      selectedVariant.stock <= 0 ||
+      stockLimitReached
+    ) {
+      return;
+    }
+
+    addItem({
+      productId,
+      slug,
+      name,
+      category,
+      variantId: selectedVariant.id,
+      size: selectedVariant.size,
+      volumeMl: selectedVariant.volumeMl,
+      unitPrice: selectedPrice,
+      maxStock: selectedVariant.stock,
+    });
+
+    setAdded(true);
+
+    window.setTimeout(() => {
+      setAdded(false);
+    }, 1200);
+  }
+
+  let buttonLabel = "Add to cart";
+
+  if (selectedStock <= 0) {
+    buttonLabel = "Sold out";
+  } else if (stockLimitReached) {
+    buttonLabel = `Maximum in cart (${selectedStock})`;
+  } else if (added) {
+    buttonLabel = "Added to cart ✓";
+  }
 
   return (
     <div>
@@ -94,9 +150,10 @@ export function ProductVariantSelector({
                   key={variant.id}
                   type="button"
                   disabled={unavailable}
-                  onClick={() =>
-                    setSelectedVariantId(variant.id)
-                  }
+                  onClick={() => {
+                    setSelectedVariantId(variant.id);
+                    setAdded(false);
+                  }}
                   className={`inline-flex min-h-11 min-w-14 items-center justify-center rounded-full border px-4 text-xs font-semibold transition ${
                     active
                       ? "border-[#181512] bg-[#181512] text-white"
@@ -132,6 +189,23 @@ export function ProductVariantSelector({
             : "Sold out"}
         </span>
       </div>
+
+      <button
+        type="button"
+        disabled={
+          selectedStock <= 0 || stockLimitReached
+        }
+        onClick={handleAddToCart}
+        className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#181512] px-7 text-sm font-semibold text-white transition hover:bg-[#35302b] disabled:cursor-not-allowed disabled:bg-[#8b847b]"
+      >
+        {buttonLabel}
+      </button>
+
+      {quantityInCart > 0 && (
+        <p className="mt-3 text-center text-[11px] text-[#776f67]">
+          {quantityInCart} of this option currently in your cart.
+        </p>
+      )}
     </div>
   );
 }
