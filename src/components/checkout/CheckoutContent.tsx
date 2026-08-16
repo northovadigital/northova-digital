@@ -1,11 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/currency";
 import type { CheckoutDetails } from "@/types/checkout";
+
+type CheckoutApiSuccess = {
+  success: true;
+  order: {
+    orderNumber: string;
+  };
+};
+
+type CheckoutApiError = {
+  success?: false;
+  error?: string;
+};
+
 
 function getVariantLabel({
   size,
@@ -26,10 +40,72 @@ function getVariantLabel({
 }
 
 export function CheckoutContent() {
-  const { items, subtotal } = useCart();
+  const router = useRouter();
+  const { items, subtotal, clearCart } = useCart();
 
   const [reviewDetails, setReviewDetails] =
     useState<CheckoutDetails | null>(null);
+
+  const [placingOrder, setPlacingOrder] = useState(false);
+  const [orderError, setOrderError] = useState<string | null>(null);
+
+  async function handlePlaceOrder() {
+    if (!reviewDetails || placingOrder) {
+      return;
+    }
+
+    setPlacingOrder(true);
+    setOrderError(null);
+
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerName: reviewDetails.fullName,
+          customerPhone: reviewDetails.phone,
+          area: reviewDetails.area,
+          address: reviewDetails.address,
+          landmark: reviewDetails.landmark,
+          city: reviewDetails.city,
+          notes: reviewDetails.notes,
+          items: items.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+
+      const result = (await response.json()) as
+        | CheckoutApiSuccess
+        | CheckoutApiError;
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          "error" in result && result.error
+            ? result.error
+            : "Unable to place your order.",
+        );
+      }
+
+      clearCart();
+
+      router.push(
+        `/order-confirmation/${result.order.orderNumber}`,
+      );
+    } catch (error) {
+      setOrderError(
+        error instanceof Error
+          ? error.message
+          : "Unable to place your order. Please try again.",
+      );
+
+      setPlacingOrder(false);
+    }
+  }
 
   function handleReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -222,17 +298,31 @@ export function CheckoutContent() {
               </p>
             </div>
 
+            {orderError && (
+              <div className="mt-4 rounded-lg border border-[#e2c9c3] bg-[#fbefec] p-4">
+                <p className="text-xs font-semibold text-[#8f564d]">
+                  We couldn&apos;t place the order.
+                </p>
+
+                <p className="mt-1 text-xs leading-5 text-[#8b6760]">
+                  {orderError}
+                </p>
+              </div>
+            )}
+
             <button
               type="button"
-              disabled
-              className="mt-6 inline-flex min-h-12 w-full cursor-not-allowed items-center justify-center rounded-full bg-[#8b847b] px-6 text-sm font-semibold text-white"
+              disabled={placingOrder}
+              onClick={handlePlaceOrder}
+              className="mt-6 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#181512] px-6 text-sm font-semibold text-white transition hover:bg-[#35302b] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Place COD order
+              {placingOrder
+                ? "Placing order..."
+                : "Place COD order"}
             </button>
 
             <p className="mt-3 text-center text-[10px] leading-4 text-[#81786f]">
-              Order submission will be enabled after the secure
-              order database is connected.
+              Your order will be securely recorded and confirmed before delivery.
             </p>
           </aside>
         </div>
