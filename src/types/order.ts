@@ -1,11 +1,11 @@
 export type OrderStatus =
-  | "new"
+  | "pending"
   | "confirmed"
   | "out_for_delivery"
   | "delivered"
   | "cancelled";
 
-export type PaymentMethod = "cash_on_delivery";
+export type PaymentMethod = "cod";
 
 export type CustomerDetails = {
   name: string;
