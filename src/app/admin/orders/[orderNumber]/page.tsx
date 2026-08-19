@@ -179,12 +179,21 @@ export default function AdminOrderDetailPage() {
   return (
     <main className="min-h-screen bg-[#f7f4ee] px-5 py-10 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-6xl">
-        <Link
-          href="/admin"
-          className="text-sm text-[#746d65] underline underline-offset-4"
-        >
-          ← Back to orders
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <Link
+            href="/admin"
+            className="text-sm text-[#746d65] underline underline-offset-4"
+          >
+            ← Back to orders
+          </Link>
+
+          <Link
+            href={`/admin/orders/${encodeURIComponent(order.order_number)}/invoice`}
+            className="inline-flex rounded-full bg-[#181512] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#332d27]"
+          >
+            View invoice
+          </Link>
+        </div>
 
         <div className="mt-6 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
