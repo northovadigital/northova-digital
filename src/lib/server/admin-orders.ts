@@ -31,8 +31,56 @@ export type AdminOrderItemRow = {
   line_total: number;
 };
 
-export async function getAdminOrders() {
+export type AdminOrderStatus =
+  | "pending"
+  | "confirmed"
+  | "out_for_delivery"
+  | "delivered"
+  | "cancelled";
+
+export async function getAdminOrders(filters?: {
+  search?: string;
+  status?: AdminOrderStatus | "all";
+}) {
   const db = getDatabase();
+
+  const search = filters?.search?.trim() ?? "";
+  const status = filters?.status ?? "all";
+
+  const conditions: string[] = [];
+  const values: string[] = [];
+
+  if (search) {
+    conditions.push(
+      `(
+        order_number LIKE ?
+        OR customer_name LIKE ?
+        OR customer_phone LIKE ?
+        OR customer_email LIKE ?
+        OR area LIKE ?
+      )`,
+    );
+
+    const pattern = `%${search}%`;
+
+    values.push(
+      pattern,
+      pattern,
+      pattern,
+      pattern,
+      pattern,
+    );
+  }
+
+  if (status !== "all") {
+    conditions.push("status = ?");
+    values.push(status);
+  }
+
+  const whereClause =
+    conditions.length > 0
+      ? `WHERE ${conditions.join(" AND ")}`
+      : "";
 
   const result = await db
     .prepare(
@@ -54,14 +102,18 @@ export async function getAdminOrders() {
         created_at,
         updated_at
        FROM orders
+       ${whereClause}
        ORDER BY created_at DESC`,
     )
+    .bind(...values)
     .all<AdminOrderRow>();
 
   return result.results;
 }
 
-export async function getAdminOrder(orderNumber: string) {
+export async function getAdminOrder(
+  orderNumber: string,
+) {
   const db = getDatabase();
 
   const order = await db
@@ -121,12 +173,7 @@ export async function getAdminOrder(orderNumber: string) {
 
 export async function updateAdminOrderStatus(
   orderNumber: string,
-  status:
-    | "pending"
-    | "confirmed"
-    | "out_for_delivery"
-    | "delivered"
-    | "cancelled",
+  status: AdminOrderStatus,
 ) {
   const db = getDatabase();
   const now = new Date().toISOString();
@@ -140,9 +187,5 @@ export async function updateAdminOrderStatus(
     .bind(status, now, orderNumber)
     .run();
 
-  if (result.meta.changes !== 1) {
-    return false;
-  }
-
-  return true;
+  return result.meta.changes === 1;
 }

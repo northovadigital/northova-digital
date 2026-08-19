@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { createOrder } from "@/lib/server/orders";
+import {
+  createOrder,
+  InsufficientStockError,
+  InventoryChangedError,
+} from "@/lib/server/orders";
 
 type RequestBody = {
   customerName?: unknown;
@@ -118,6 +122,29 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
+    if (error instanceof InsufficientStockError) {
+      return NextResponse.json(
+        {
+          error: error.code,
+          message: error.message,
+          available: error.available,
+          productName: error.productName,
+          variantLabel: error.variantLabel,
+        },
+        { status: 409 },
+      );
+    }
+
+    if (error instanceof InventoryChangedError) {
+      return NextResponse.json(
+        {
+          error: error.code,
+          message: error.message,
+        },
+        { status: 409 },
+      );
+    }
+
     const message =
       error instanceof Error
         ? error.message

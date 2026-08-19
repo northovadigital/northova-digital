@@ -18,6 +18,10 @@ type CheckoutApiSuccess = {
 type CheckoutApiError = {
   success?: false;
   error?: string;
+  message?: string;
+  available?: number;
+  productName?: string;
+  variantLabel?: string;
 };
 
 
@@ -85,9 +89,11 @@ export function CheckoutContent() {
 
       if (!response.ok || !result.success) {
         throw new Error(
-          "error" in result && result.error
-            ? result.error
-            : "Unable to place your order.",
+          "message" in result && result.message
+            ? result.message
+            : "error" in result && result.error
+              ? result.error
+              : "Unable to place your order.",
         );
       }
 

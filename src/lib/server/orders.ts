@@ -43,6 +43,48 @@ type ResolvedOrderItem = {
   lineTotal: number;
 };
 
+export class InsufficientStockError extends Error {
+  code = "INSUFFICIENT_STOCK" as const;
+
+  constructor(
+    public readonly productName: string,
+    public readonly variantLabel: string,
+    public readonly available: number,
+  ) {
+    super(
+      available > 0
+        ? `Only ${available} unit${available === 1 ? "" : "s"} of ${productName} ${variantLabel} ${available === 1 ? "is" : "are"} currently available. Please adjust your quantity.`
+        : `${productName} ${variantLabel} is currently sold out. Please remove it from your cart.`,
+    );
+
+    this.name = "InsufficientStockError";
+  }
+}
+
+export class InventoryChangedError extends Error {
+  code = "INVENTORY_CHANGED" as const;
+
+  constructor() {
+    super(
+      "Stock changed while your order was being placed. Please review your cart and try again.",
+    );
+
+    this.name = "InventoryChangedError";
+  }
+}
+
+function getVariantLabel(inventory: InventoryRow) {
+  if (inventory.volume_ml) {
+    return `${inventory.volume_ml} ml`;
+  }
+
+  if (inventory.size) {
+    return `size ${inventory.size}`;
+  }
+
+  return "standard variant";
+}
+
 export async function createOrder(input: CreateOrderInput) {
   const db = getDatabase();
 
@@ -72,19 +114,27 @@ export async function createOrder(input: CreateOrderInput) {
           v.price,
           p.base_price,
           v.stock
-        FROM product_variants v
-        INNER JOIN products p
-          ON p.id = v.product_id
-        WHERE p.id = ?
-          AND v.id = ?
-          AND p.status = 'active'
-        LIMIT 1`,
+         FROM product_variants v
+         INNER JOIN products p
+           ON p.id = v.product_id
+         WHERE p.id = ?
+           AND v.id = ?
+           AND p.status = 'active'
+         LIMIT 1`,
       )
       .bind(item.productId, item.variantId)
       .first<InventoryRow>();
 
     if (!inventory) {
       throw new Error("Product or variant is no longer available.");
+    }
+
+    if (inventory.stock < item.quantity) {
+      throw new InsufficientStockError(
+        inventory.product_name,
+        getVariantLabel(inventory),
+        inventory.stock,
+      );
     }
 
     const unitPrice =
@@ -200,11 +250,22 @@ export async function createOrder(input: CreateOrderInput) {
       ),
   );
 
-  await db.batch([
-    ...inventoryUpdates,
-    orderStatement,
-    ...itemStatements,
-  ]);
+  try {
+    await db.batch([
+      ...inventoryUpdates,
+      orderStatement,
+      ...itemStatements,
+    ]);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message.includes("Insufficient stock")
+    ) {
+      throw new InventoryChangedError();
+    }
+
+    throw error;
+  }
 
   return {
     id: orderId,

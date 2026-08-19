@@ -7,8 +7,11 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ProductVisual } from "@/components/storefront/ProductVisual";
 import { ProductVariantSelector } from "@/components/storefront/ProductVariantSelector";
+import { getProductInventory } from "@/lib/server/catalogue";
 import { featuredProducts } from "@/data/products";
 import type { Product } from "@/types/product";
+
+export const dynamic = "force-dynamic";
 
 type ProductPageParams = Promise<{
   slug: string;
@@ -24,12 +27,6 @@ function getProduct(slug: string): Product | undefined {
   return featuredProducts.find(
     (product) => product.slug === slug,
   );
-}
-
-export function generateStaticParams() {
-  return featuredProducts.map((product) => ({
-    slug: product.slug,
-  }));
 }
 
 export async function generateMetadata({
@@ -63,6 +60,34 @@ export default async function ProductPage({
   if (!product) {
     notFound();
   }
+
+  const inventory = await getProductInventory(product.id);
+
+  const inventoryByVariant = new Map(
+    inventory.map((variant) => [variant.id, variant]),
+  );
+
+  const liveVariants = product.variants.map((variant) => {
+    const liveVariant = inventoryByVariant.get(variant.id);
+
+    if (!liveVariant) {
+      return variant;
+    }
+
+    return {
+      ...variant,
+      size: liveVariant.size ?? undefined,
+      color: liveVariant.color ?? undefined,
+      volumeMl:
+        liveVariant.volume_ml ?? undefined,
+      price:
+        liveVariant.price ?? variant.price,
+      stock: liveVariant.stock,
+    };
+  });
+
+  const liveBasePrice =
+    liveVariants[0]?.price ?? product.price;
 
   return (
     <>
@@ -107,8 +132,8 @@ export default async function ProductPage({
                   slug={product.slug}
                   name={product.name}
                   category={product.category}
-                  basePrice={product.price}
-                  variants={product.variants}
+                  basePrice={liveBasePrice}
+                  variants={liveVariants}
                 />
               </div>
 
@@ -141,7 +166,6 @@ export default async function ProductPage({
                   </p>
                 </div>
               </div>
-
 
               <Link
                 href="/shop"
