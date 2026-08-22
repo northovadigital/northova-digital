@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function BrandStory() {
@@ -5,19 +6,26 @@ export function BrandStory() {
     <section className="bg-[#1e1c19] px-5 py-16 text-[#f6f1e9] sm:px-8 sm:py-20 lg:px-10 lg:py-24">
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
         <div className="relative min-h-[390px] overflow-hidden border border-white/15 bg-[#2b2925]">
-          <div className="absolute left-7 top-7 text-[10px] font-semibold tracking-[0.24em] text-[#c3a675] uppercase">
+          <Image
+            src="/images/brand-story.jpg"
+            alt="Farhana & Kulsoom fashion, fragrance and home collection"
+            fill
+            priority
+            className="z-0 object-cover"
+            sizes="(min-width: 1024px) 40vw, 100vw"
+          />
+
+          <div className="absolute inset-0 z-10 bg-black/10" />
+
+          <div className="absolute left-7 top-7 z-20 text-[10px] font-semibold tracking-[0.24em] text-[#c3a675] uppercase">
             Farhana & Kulsoom
           </div>
 
-          <div className="absolute right-6 top-4 font-serif text-7xl text-white/[0.06]">
+          <div className="absolute right-6 top-4 z-20 font-serif text-7xl text-white/[0.18]">
             F&K
           </div>
 
-          <div className="absolute left-[15%] top-[28%] h-44 w-36 border border-white/15" />
-          <div className="absolute left-[32%] top-[38%] h-44 w-36 border border-[#c3a675]/25" />
-          <div className="absolute right-[12%] top-[20%] h-44 w-36 border border-white/10" />
-
-          <div className="absolute inset-x-7 bottom-7 border-t border-white/10 pt-5">
+          <div className="absolute inset-x-7 bottom-7 z-20 border-t border-white/10 pt-5">
             <p className="font-serif text-3xl leading-tight tracking-[-0.035em]">
               Thoughtfully selected.
               <span className="block italic text-[#c3a675]">

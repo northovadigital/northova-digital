@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export function Hero() {
@@ -69,14 +70,24 @@ export function Hero() {
         </div>
 
         <div className="relative min-h-[520px] overflow-hidden bg-[#cbc0ae] lg:min-h-full">
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,#b9aa94_0%,#e6dfd4_48%,#aaa18d_100%)]" />
+          <Image
+            src="/images/hero.jpg"
+            alt="F&K curated fashion, fragrance and home collection"
+            fill
+            priority
+            className="z-0 object-cover"
+            sizes="(min-width: 1024px) 50vw, 100vw"
+          />
 
-          <div className="absolute inset-6 border border-white/40 sm:inset-10">
+          <div className="absolute inset-0 z-10 bg-black/10" />
+
+          <div className="absolute inset-6 z-20 border border-white/40 sm:inset-10">
+
             <div className="absolute left-6 top-6 text-[9px] font-semibold tracking-[0.24em] text-[#51493f] uppercase">
               The F&K Edit
             </div>
 
-            <div className="absolute right-6 top-4 font-serif text-6xl text-white/25">
+            <div className="absolute right-6 top-4 font-serif text-6xl text-white/35">
               F&K
             </div>
 
@@ -84,34 +95,17 @@ export function Hero() {
               <div className="mb-3 text-[8px] font-semibold tracking-[0.18em] text-[#645b50] uppercase">
                 Fashion
               </div>
-
-              <div className="relative h-52 border border-white/35 bg-white/10 backdrop-blur-sm">
-                <div className="absolute left-1/2 top-8 h-36 w-[62%] -translate-x-1/2 rounded-t-[60px] border border-white/40 bg-white/10" />
-                <div className="absolute bottom-5 left-1/2 h-px w-[68%] -translate-x-1/2 bg-white/30" />
-              </div>
             </div>
 
             <div className="absolute left-[37%] top-[13%] w-[27%]">
               <div className="mb-3 text-[8px] font-semibold tracking-[0.18em] text-[#645b50] uppercase">
                 Fragrance
               </div>
-
-              <div className="relative h-60 border border-white/35 bg-[#3d3932]/10 backdrop-blur-sm">
-                <div className="absolute left-1/2 top-12 h-8 w-14 -translate-x-1/2 border border-white/40 bg-white/10" />
-                <div className="absolute left-1/2 top-[76px] h-28 w-[68%] -translate-x-1/2 rounded-2xl border border-white/40 bg-[#544c42]/10" />
-                <div className="absolute left-1/2 top-[98px] h-14 w-[45%] -translate-x-1/2 border border-white/30" />
-              </div>
             </div>
 
             <div className="absolute right-[8%] top-[29%] w-[27%]">
               <div className="mb-3 text-[8px] font-semibold tracking-[0.18em] text-[#645b50] uppercase">
                 Home
-              </div>
-
-              <div className="relative h-48 border border-white/35 bg-white/10 backdrop-blur-sm">
-                <div className="absolute left-1/2 top-10 h-16 w-[72%] -translate-x-1/2 border border-white/40 bg-white/10" />
-                <div className="absolute left-1/2 top-[76px] h-16 w-[82%] -translate-x-1/2 border border-white/35 bg-white/5" />
-                <div className="absolute left-1/2 top-[110px] h-14 w-[88%] -translate-x-1/2 border border-white/30 bg-white/10" />
               </div>
             </div>
 

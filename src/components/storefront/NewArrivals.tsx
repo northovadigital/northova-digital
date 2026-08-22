@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { ProductVisual } from "@/components/storefront/ProductVisual";
-import { featuredProducts } from "@/data/products";
+import type { Product } from "@/types/product";
 import { getProductDisplayPrice } from "@/lib/product";
 
 const categoryLabels: Record<string, string> = {
@@ -10,7 +10,11 @@ const categoryLabels: Record<string, string> = {
   home: "Home & Living",
 };
 
-export function NewArrivals() {
+export function NewArrivals({
+  products,
+}: {
+  products: Product[];
+}) {
   return (
     <section className="bg-[#f4f0e9] px-5 py-16 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-7xl">
@@ -35,7 +39,7 @@ export function NewArrivals() {
         </div>
 
         <div className="grid grid-cols-2 gap-x-3 gap-y-9 sm:gap-x-5 lg:grid-cols-3">
-          {featuredProducts.map((product) => (
+          {products.map((product) => (
             <article key={product.id} className="group">
               <Link
                 href="/shop"
@@ -43,7 +47,8 @@ export function NewArrivals() {
                 aria-label={`View ${product.name}`}
               >
                 <div className="relative overflow-hidden">
-                  <ProductVisual category={product.category} />
+                  <ProductVisual
+                  imageUrl={product.imageUrl} category={product.category} />
 
                   <div className="absolute left-3 top-3 rounded-full bg-[#fffdf9]/90 px-3 py-1.5 text-[8px] font-semibold tracking-[0.14em] text-[#4f473f] uppercase backdrop-blur-sm sm:left-4 sm:top-4 sm:text-[9px]">
                     New

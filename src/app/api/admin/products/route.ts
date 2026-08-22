@@ -14,6 +14,8 @@ function createId(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`;
 }
 
+
+
 export async function GET() {
   try {
     if (!(await isAdminAuthenticated())) {
@@ -24,6 +26,15 @@ export async function GET() {
     }
 
     const db = await getDatabaseAsync();
+
+    try {
+      await db
+        .prepare(`ALTER TABLE products ADD COLUMN image_url TEXT`)
+
+    } catch {
+      // Column already exists.
+    }
+
 
     const products = await db
       .prepare(`
@@ -36,6 +47,8 @@ export async function GET() {
           base_price,
           status,
           featured,
+          image_url,
+       image_urls,
           created_at
         FROM products
         ORDER BY created_at DESC
@@ -72,6 +85,13 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+
+  // Ensure the product gallery column exists.
+
+
+
+
+
   try {
     if (!(await isAdminAuthenticated())) {
       return NextResponse.json(
@@ -87,6 +107,8 @@ export async function POST(request: Request) {
       basePrice?: unknown;
       status?: unknown;
       featured?: unknown;
+  imageUrl?: unknown;
+  imageUrls?: unknown;
       slug?: unknown;
       variants?: unknown;
     };
@@ -97,6 +119,18 @@ export async function POST(request: Request) {
     const basePrice = Number(body.basePrice);
     const status = String(body.status ?? "active");
     const featured = Boolean(body.featured);
+    const imageUrl = String(body.imageUrl ?? "").trim();
+
+  const imageUrls = Array.isArray(body.imageUrls)
+    ? body.imageUrls
+        .filter(
+          (value): value is string =>
+            typeof value === "string" && value.trim().length > 0,
+        )
+        .slice(0, 8)
+    : imageUrl
+      ? [imageUrl]
+      : [];
     const variants = Array.isArray(body.variants) ? body.variants : [];
 
     if (!name || !description || !category) {
@@ -148,33 +182,37 @@ export async function POST(request: Request) {
     const createdAt = new Date().toISOString();
 
     const statements = [
-      db
-        .prepare(`
-          INSERT INTO products (
-            id,
-            slug,
-            name,
-            description,
-            category,
-            base_price,
-            status,
-            featured,
-            created_at
-          )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `)
-        .bind(
-          productId,
-          slug,
-          name,
-          description,
-          category,
-          Math.round(basePrice),
-          status,
-          featured ? 1 : 0,
-          createdAt,
-        ),
-    ];
+  db
+    .prepare(`
+      INSERT INTO products (
+        id,
+        slug,
+        name,
+        description,
+        category,
+        base_price,
+        status,
+        featured,
+        image_url,
+        image_urls,
+        created_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+    .bind(
+      productId,
+      slug,
+      name,
+      description,
+      category,
+      Math.round(basePrice),
+      status,
+      featured ? 1 : 0,
+      imageUrl || null,
+      JSON.stringify(imageUrls),
+      createdAt,
+    ),
+];
 
     for (const variant of variants) {
       const stock = Number(variant.stock ?? 0);

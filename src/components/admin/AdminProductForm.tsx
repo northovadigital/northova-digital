@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useEffect, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 type VariantForm = {
@@ -19,7 +19,13 @@ const emptyVariant: VariantForm = {
   stock: "0",
 };
 
-export default function AdminProductForm() {
+type AdminProductFormProps = {
+  initialImageUrl?: string;
+};
+
+export default function AdminProductForm({
+  initialImageUrl = "",
+}: AdminProductFormProps) {
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -35,6 +41,15 @@ export default function AdminProductForm() {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [imageUrls, setImageUrls] = useState<string[]>(
+    initialImageUrl ? [initialImageUrl] : [],
+  );
+
+  useEffect(() => {
+    setImageUrls(initialImageUrl ? [initialImageUrl] : []);
+  }, [initialImageUrl]);
+
 
   function updateVariant(
     index: number,
@@ -67,6 +82,36 @@ export default function AdminProductForm() {
     );
   }
 
+  function removeImage(index: number) {
+    setImageUrls((current) =>
+      current.filter((_, imageIndex) => imageIndex !== index),
+    );
+  }
+
+  function moveImage(index: number, direction: -1 | 1) {
+    setImageUrls((current) => {
+      const target = index + direction;
+
+      if (
+        index < 0 ||
+        index >= current.length ||
+        target < 0 ||
+        target >= current.length
+      ) {
+        return current;
+      }
+
+      const next = [...current];
+
+      [next[index], next[target]] = [
+        next[target],
+        next[index],
+      ];
+
+      return next;
+    });
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -84,6 +129,9 @@ export default function AdminProductForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+
+          imageUrls,
+          imageUrl: imageUrls[0] || null,
           name,
           slug,
           description,
@@ -127,6 +175,79 @@ export default function AdminProductForm() {
           : "Unable to create product.",
       );
       setSaving(false);
+    }
+  }
+
+
+  async function handleImageChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please select a valid image file.");
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      setError("Image must be smaller than 8MB.");
+      return;
+    }
+
+    try {
+      const bitmap = await createImageBitmap(file);
+      const maxSize = 1200;
+
+      const scale = Math.min(
+        1,
+        maxSize / Math.max(bitmap.width, bitmap.height),
+      );
+
+      const canvas = document.createElement("canvas");
+
+      canvas.width = Math.max(
+        1,
+        Math.round(bitmap.width * scale),
+      );
+
+      canvas.height = Math.max(
+        1,
+        Math.round(bitmap.height * scale),
+      );
+
+      const context = canvas.getContext("2d");
+
+      if (!context) {
+        throw new Error("Unable to process image.");
+      }
+
+      context.drawImage(
+        bitmap,
+        0,
+        0,
+        canvas.width,
+        canvas.height,
+      );
+
+      const dataUrl = canvas.toDataURL(
+        "image/jpeg",
+        0.82,
+      );
+
+      setImageUrls((current) => {
+        if (current.length >= 8) {
+          return current;
+        }
+
+        return [...current, dataUrl];
+      });
+      setError(null);
+    } catch {
+      setError("Unable to process this image.");
     }
   }
 
@@ -224,7 +345,114 @@ export default function AdminProductForm() {
             </select>
           </label>
         </div>
-      </section>
+
+          <section
+            data-product-image-uploader
+            className="mt-6 rounded-2xl border border-[#ddd5c9] bg-[#fffdf9] p-5"
+          >
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-[10px] font-semibold tracking-[0.14em] text-[#9a7c50] uppercase">
+                  Product gallery
+                </p>
+
+                <p className="mt-1 text-xs text-[#81776d]">
+                  Add up to 8 images. The first image becomes the catalogue cover.
+                </p>
+              </div>
+
+              <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-[#181512] px-5 text-sm font-semibold text-white transition hover:bg-[#37322c]">
+                + Add images
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={handleImageChange}
+                  className="sr-only"
+                />
+              </label>
+            </div>
+
+            {imageUrls.length > 0 ? (
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {imageUrls.map((url, index) => (
+                  <div
+                    key={`${url}-${index}`}
+                    className="relative overflow-hidden rounded-2xl border border-[#ddd5c9] bg-[#f7f4ee]"
+                  >
+                    <div className="flex aspect-square items-center justify-center p-2">
+                      <img
+                        src={url}
+                        alt={`Product image ${index + 1}`}
+                        className="max-h-full max-w-full object-contain"
+                      />
+                    </div>
+
+                    {index === 0 && (
+                      <span className="absolute left-2 top-2 rounded-full bg-[#181512]/90 px-2.5 py-1 text-[9px] font-semibold tracking-[0.12em] text-white uppercase">
+                        Cover
+                      </span>
+                    )}
+
+                    <div className="absolute inset-x-2 bottom-2 flex justify-center gap-1.5">
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(index, -1)}
+                          className="h-8 w-8 rounded-full bg-white/95 text-sm font-semibold shadow-sm"
+                          aria-label="Move image left"
+                        >
+                          ←
+                        </button>
+                      )}
+
+                      {index < imageUrls.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(index, 1)}
+                          className="h-8 w-8 rounded-full bg-white/95 text-sm font-semibold shadow-sm"
+                          aria-label="Move image right"
+                        >
+                          →
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="h-8 w-8 rounded-full bg-white/95 text-xs font-semibold text-[#9a655d] shadow-sm"
+                        aria-label="Remove image"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <label className="mt-5 flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#cbbfad] bg-white px-5 text-center transition hover:border-[#9a7c50] hover:bg-[#fffdf9]">
+                <span className="text-3xl">↑</span>
+
+                <span className="mt-3 text-sm font-semibold text-[#403932]">
+                  Choose product images
+                </span>
+
+                <span className="mt-1 text-xs text-[#81776d]">
+                  JPG, PNG or WEBP · up to 8 images · maximum 8MB each
+                </span>
+
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={handleImageChange}
+                  className="sr-only"
+                />
+              </label>
+            )}
+          </section>
+
+</section>
 
       <section className="rounded-2xl border border-[#ddd5c9] bg-[#fffdf9] p-5 sm:p-7">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">

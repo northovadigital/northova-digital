@@ -6,10 +6,12 @@ import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ProductVisual } from "@/components/storefront/ProductVisual";
+import { ProductGallery } from "@/components/storefront/ProductGallery";
 import { ProductVariantSelector } from "@/components/storefront/ProductVariantSelector";
-import { getProductInventory } from "@/lib/server/catalogue";
-import { featuredProducts } from "@/data/products";
-import type { Product } from "@/types/product";
+import {
+  getProductBySlug,
+  getProductInventory,
+} from "@/lib/server/catalogue";
 
 export const dynamic = "force-dynamic";
 
@@ -23,11 +25,6 @@ const categoryLabels: Record<string, string> = {
   home: "Home & Living",
 };
 
-function getProduct(slug: string): Product | undefined {
-  return featuredProducts.find(
-    (product) => product.slug === slug,
-  );
-}
 
 export async function generateMetadata({
   params,
@@ -35,7 +32,7 @@ export async function generateMetadata({
   params: ProductPageParams;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
@@ -55,7 +52,7 @@ export default async function ProductPage({
   params: ProductPageParams;
 }) {
   const { slug } = await params;
-  const product = getProduct(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
@@ -105,12 +102,11 @@ export default async function ProductPage({
         </div>
 
         <section className="mx-auto grid max-w-7xl gap-8 px-5 pb-16 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:px-10 lg:pb-24">
-          <div className="overflow-hidden rounded-lg">
-            <ProductVisual
-              category={product.category}
-              variantKey={product.slug}
-            />
-          </div>
+          <ProductGallery
+            images={product.images}
+            productName={product.name}
+            category={product.category}
+          />
 
           <div className="flex items-center">
             <div className="w-full max-w-xl">

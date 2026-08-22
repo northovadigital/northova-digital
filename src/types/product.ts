@@ -16,6 +16,8 @@ export type ProductVariant = {
 };
 
 export type Product = {
+  imageUrl?: string;
+
   id: string;
   slug: string;
   name: string;

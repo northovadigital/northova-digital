@@ -5,7 +5,7 @@ import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ProductCard } from "@/components/storefront/ProductCard";
-import { featuredProducts } from "@/data/products";
+import { getProductCatalogue } from "@/lib/server/catalogue";
 import type { Product } from "@/types/product";
 
 export const metadata: Metadata = {
@@ -145,6 +145,8 @@ export default async function ShopPage({
   const requestedSort = getFirstValue(params.sort) ?? "featured";
   const query = getFirstValue(params.q) ?? "";
 
+  const productsFromDatabase = await getProductCatalogue();
+
   const validCategory = categoryOptions.some(
     (option) => option.value === requestedCategory,
   )
@@ -158,7 +160,7 @@ export default async function ShopPage({
     : "featured";
 
   const filteredProducts = filterProducts(
-    featuredProducts,
+    productsFromDatabase,
     validCategory,
     query,
   );

@@ -10,6 +10,8 @@ type RequestBody = {
   basePrice?: unknown;
   status?: unknown;
   featured?: unknown;
+  imageUrl?: unknown;
+  imageUrls?: unknown;
   variants?: unknown;
 };
 
@@ -29,6 +31,8 @@ async function authorize() {
   return await isAdminAuthenticated();
 }
 
+
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -44,6 +48,14 @@ export async function GET(
     const { id } = await params;
     const db = await getDatabaseAsync();
 
+    try {
+      await db
+        .prepare(`ALTER TABLE products ADD COLUMN image_url TEXT`)
+} catch {
+      // Column already exists.
+    }
+
+
     const product = await db
       .prepare(`
         SELECT
@@ -55,6 +67,8 @@ export async function GET(
           base_price,
           status,
           featured,
+          image_url,
+       image_urls,
           created_at
         FROM products
         WHERE id = ?
@@ -105,6 +119,13 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+
+  // Ensure the product gallery column exists.
+
+
+
+
+
   try {
     if (!(await authorize())) {
       return NextResponse.json(
@@ -124,6 +145,18 @@ export async function PUT(
     const basePrice = Number(body.basePrice);
     const status = String(body.status ?? "active");
     const featured = Boolean(body.featured);
+    const imageUrl = String(body.imageUrl ?? "").trim();
+
+  const imageUrls = Array.isArray(body.imageUrls)
+    ? body.imageUrls
+        .filter(
+          (value): value is string =>
+            typeof value === "string" && value.trim().length > 0,
+        )
+        .slice(0, 8)
+    : imageUrl
+      ? [imageUrl]
+      : [];
     const variants = Array.isArray(body.variants) ? body.variants : [];
 
     if (!name || !description || !category) {
@@ -196,7 +229,9 @@ export async function PUT(
             category = ?,
             base_price = ?,
             status = ?,
-            featured = ?
+            featured = ?,
+            image_url = ?,
+            image_urls = ?
           WHERE id = ?
         `)
         .bind(
@@ -207,6 +242,8 @@ export async function PUT(
           Math.round(basePrice),
           status,
           featured ? 1 : 0,
+          imageUrl || null,
+          JSON.stringify(imageUrls),
           id,
         ),
 
@@ -329,7 +366,7 @@ export async function DELETE(
     await db
       .prepare(`DELETE FROM products WHERE id = ?`)
       .bind(id)
-      .run();
+      .run()
 
     return NextResponse.json({
       success: true,

@@ -62,9 +62,22 @@ export function SiteFooter() {
         </div>
 
         <div className="flex flex-col gap-3 border-t border-[#e2dcd2] py-6 text-xs text-[#877f76] sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            © 2026 {storeConfig.name}. All rights reserved.
-          </p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <p>
+              © 2026 {storeConfig.name}. All rights reserved.
+            </p>
+
+            <span aria-hidden="true">·</span>
+
+            <a
+              href="https://northovadigital.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:opacity-70"
+            >
+              Designed by Northova Digital
+            </a>
+          </div>
 
           <p>Karachi, Pakistan</p>
         </div>

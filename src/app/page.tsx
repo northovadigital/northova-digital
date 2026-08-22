@@ -6,8 +6,11 @@ import { CategoryGrid } from "@/components/storefront/CategoryGrid";
 import { Hero } from "@/components/storefront/Hero";
 import { NewArrivals } from "@/components/storefront/NewArrivals";
 import { TrustStrip } from "@/components/storefront/TrustStrip";
+import { getProductCatalogue } from "@/lib/server/catalogue";
 
-export default function Home() {
+export default async function Home() {
+  const products = await getProductCatalogue();
+
   return (
     <>
       <AnnouncementBar />
@@ -17,7 +20,7 @@ export default function Home() {
         <Hero />
         <TrustStrip />
         <CategoryGrid />
-        <NewArrivals />
+        <NewArrivals products={products} />
         <BrandStory />
       </main>
 

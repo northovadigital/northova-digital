@@ -1,3 +1,42 @@
+
+async function readImageFile(file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Please select an image file.");
+  }
+
+  if (file.size > 8 * 1024 * 1024) {
+    throw new Error("Image must be smaller than 8MB.");
+  }
+
+  const bitmap = await createImageBitmap(file);
+  const maxSize = 1000;
+
+  const scale = Math.min(
+    1,
+    maxSize / Math.max(bitmap.width, bitmap.height),
+  );
+
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    throw new Error("Unable to process image.");
+  }
+
+  context.drawImage(
+    bitmap,
+    0,
+    0,
+    canvas.width,
+    canvas.height,
+  );
+
+  return canvas.toDataURL("image/jpeg", 0.82);
+}
+
 import Link from "next/link";
 
 import AdminProductForm from "@/components/admin/AdminProductForm";

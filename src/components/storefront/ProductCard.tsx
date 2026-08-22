@@ -26,6 +26,7 @@ export function ProductCard({ product }: ProductCardProps) {
       >
         <div className="relative overflow-hidden rounded-lg">
           <ProductVisual
+            imageUrl={product.imageUrl}
             category={product.category}
             variantKey={product.slug}
           />

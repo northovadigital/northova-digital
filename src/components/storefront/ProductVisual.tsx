@@ -1,4 +1,6 @@
 type ProductVisualProps = {
+  imageUrl?: string;
+
   category: string;
   variantKey?: string;
   compact?: boolean;
@@ -12,7 +14,8 @@ function getVariant(value: string): number {
 }
 
 export function ProductVisual({
-  category,
+  imageUrl,
+category,
   variantKey = category,
   compact = false,
 }: ProductVisualProps) {
@@ -20,6 +23,22 @@ export function ProductVisual({
   const minHeightClass = compact
     ? "min-h-[170px]"
     : "min-h-[310px]";
+
+  // A real uploaded product image always takes priority,
+  // regardless of whether the product is fashion, fragrance or home.
+  if (imageUrl) {
+    return (
+      <div className="group overflow-hidden rounded-2xl border border-[#ddd5c9] bg-[#fffdf9]">
+        <div className="flex aspect-square w-full items-center justify-center p-3 sm:p-4">
+          <img
+            src={imageUrl}
+            alt="Product image"
+            className="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-[1.015]"
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (category === "fashion") {
     const backgrounds = [
@@ -34,7 +53,8 @@ export function ProductVisual({
       "left-[31%] top-[31%]",
     ];
 
-    return (
+
+  return (
       <div
         aria-hidden="true"
         className={`relative h-full ${minHeightClass} overflow-hidden ${backgrounds[variant]}`}

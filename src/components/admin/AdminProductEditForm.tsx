@@ -25,6 +25,8 @@ type ProductResponse = {
     base_price: number;
     status: string;
     featured: number;
+    image_url: string | null;
+    image_urls: string | null;
   };
   variants: Array<{
     id: string;
@@ -57,6 +59,7 @@ export default function AdminProductEditForm({ productId }: Props) {
   const [basePrice, setBasePrice] = useState("");
   const [status, setStatus] = useState("active");
   const [featured, setFeatured] = useState(false);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [variants, setVariants] = useState<VariantDraft[]>([
     emptyVariant(),
   ]);
@@ -86,6 +89,33 @@ export default function AdminProductEditForm({ productId }: Props) {
         setBasePrice(String(data.product.base_price));
         setStatus(data.product.status);
         setFeatured(data.product.featured === 1);
+
+        let loadedImages: string[] = [];
+
+        try {
+          const parsed = data.product.image_urls
+            ? JSON.parse(data.product.image_urls)
+            : [];
+
+          if (Array.isArray(parsed)) {
+            loadedImages = parsed.filter(
+              (value): value is string =>
+                typeof value === "string" &&
+                value.trim().length > 0,
+            );
+          }
+        } catch {
+          loadedImages = [];
+        }
+
+        if (
+          loadedImages.length === 0 &&
+          data.product.image_url
+        ) {
+          loadedImages = [data.product.image_url];
+        }
+
+        setImageUrls(loadedImages);
 
         setVariants(
           data.variants.length > 0
@@ -138,6 +168,116 @@ export default function AdminProductEditForm({ productId }: Props) {
     );
   }
 
+  async function handleImageChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const files = Array.from(event.target.files ?? []);
+
+    if (files.length === 0) {
+      return;
+    }
+
+    if (imageUrls.length + files.length > 8) {
+      setError("You can have up to 8 product images.");
+      event.target.value = "";
+      return;
+    }
+
+    try {
+      const processed = await Promise.all(
+        files.map(async (file) => {
+          if (!file.type.startsWith("image/")) {
+            throw new Error("Please select valid image files.");
+          }
+
+          if (file.size > 8 * 1024 * 1024) {
+            throw new Error("Each image must be smaller than 8MB.");
+          }
+
+          const bitmap = await createImageBitmap(file);
+          const maxSize = 1600;
+
+          const scale = Math.min(
+            1,
+            maxSize / Math.max(bitmap.width, bitmap.height),
+          );
+
+          const canvas = document.createElement("canvas");
+
+          canvas.width = Math.max(
+            1,
+            Math.round(bitmap.width * scale),
+          );
+
+          canvas.height = Math.max(
+            1,
+            Math.round(bitmap.height * scale),
+          );
+
+          const context = canvas.getContext("2d");
+
+          if (!context) {
+            throw new Error("Unable to process image.");
+          }
+
+          context.drawImage(
+            bitmap,
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+          );
+
+          return canvas.toDataURL("image/jpeg", 0.84);
+        }),
+      );
+
+      setImageUrls((current) =>
+        [...current, ...processed].slice(0, 8),
+      );
+
+      setError("");
+      event.target.value = "";
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : "Unable to process these images.",
+      );
+      event.target.value = "";
+    }
+  }
+
+  function removeImage(index: number) {
+    setImageUrls((current) =>
+      current.filter((_, imageIndex) => imageIndex !== index),
+    );
+  }
+
+  function moveImage(index: number, direction: -1 | 1) {
+    setImageUrls((current) => {
+      const target = index + direction;
+
+      if (
+        index < 0 ||
+        index >= current.length ||
+        target < 0 ||
+        target >= current.length
+      ) {
+        return current;
+      }
+
+      const next = [...current];
+
+      [next[index], next[target]] = [
+        next[target],
+        next[index],
+      ];
+
+      return next;
+    });
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -157,6 +297,8 @@ export default function AdminProductEditForm({ productId }: Props) {
           description,
           category,
           basePrice: Number(basePrice),
+          imageUrls,
+          imageUrl: imageUrls[0] || null,
           status,
           featured,
           variants: variants.map((variant) => ({
@@ -282,6 +424,118 @@ export default function AdminProductEditForm({ productId }: Props) {
             />
             Show as featured product
           </label>
+
+          <div className="md:col-span-2">
+            <Field label="Product gallery">
+              <div className="rounded-2xl border border-[#e5ded5] bg-[#fbfaf8] p-4">
+                <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                  <div>
+                    <p className="text-sm font-semibold text-[#403a34]">
+                      Product images
+                    </p>
+
+                    <p className="mt-1 text-xs text-[#746d65]">
+                      First image is the cover. Add up to 8 images.
+                    </p>
+                  </div>
+
+                  <label className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-full bg-[#181512] px-5 text-sm font-semibold text-white transition hover:bg-[#37322c]">
+                    + Add images
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      onChange={handleImageChange}
+                      className="sr-only"
+                    />
+                  </label>
+                </div>
+
+                {imageUrls.length > 0 ? (
+                  <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {imageUrls.map((url, index) => (
+                      <div
+                        key={`${url}-${index}`}
+                        className="relative overflow-hidden rounded-2xl border border-[#ddd6cd] bg-white"
+                      >
+                        <div className="flex aspect-square items-center justify-center p-2">
+                          <img
+                            src={url}
+                            alt={`${name} image ${index + 1}`}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+
+                        {index === 0 && (
+                          <span className="absolute left-2 top-2 rounded-full bg-[#181512]/90 px-2.5 py-1 text-[9px] font-semibold tracking-[0.12em] text-white uppercase">
+                            Cover
+                          </span>
+                        )}
+
+                        <div className="absolute inset-x-2 bottom-2 flex justify-center gap-1.5">
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => moveImage(index, -1)}
+                              className="h-8 w-8 rounded-full bg-white/95 text-sm font-semibold shadow-sm"
+                              aria-label="Move image left"
+                            >
+                              ←
+                            </button>
+                          )}
+
+                          {index < imageUrls.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={() => moveImage(index, 1)}
+                              className="h-8 w-8 rounded-full bg-white/95 text-sm font-semibold shadow-sm"
+                              aria-label="Move image right"
+                            >
+                              →
+                            </button>
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="h-8 w-8 rounded-full bg-white/95 text-xs font-semibold text-[#9a655d] shadow-sm"
+                            aria-label="Remove image"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <label className="mt-5 flex min-h-44 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#cfc6bc] bg-white px-5 text-center transition hover:border-[#9a7c50] hover:bg-[#fffdf9]">
+                    <span className="text-3xl">↑</span>
+
+                    <span className="mt-3 text-sm font-semibold text-[#403a34]">
+                      Choose product images
+                    </span>
+
+                    <span className="mt-1 text-xs text-[#746d65]">
+                      JPG, PNG or WebP · up to 8 images
+                    </span>
+
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      onChange={handleImageChange}
+                      className="sr-only"
+                    />
+                  </label>
+                )}
+
+                <p className="mt-3 text-xs text-[#746d65]">
+                  Reorder images with the arrows. The first image is displayed
+                  as the main catalogue image.
+                </p>
+              </div>
+            </Field>
+          </div>
 
           <div className="md:col-span-2">
             <Field label="Description">
