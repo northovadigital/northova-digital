@@ -78,6 +78,9 @@ export function CheckoutContent() {
           items: items.map((item) => ({
             productId: item.productId,
             variantId: item.variantId,
+            slug: item.slug,
+            size: item.size,
+            volumeMl: item.volumeMl,
             quantity: item.quantity,
           })),
         }),

@@ -63,28 +63,28 @@ export default async function ProductPage({
 
   const inventory = await getProductInventory(product.id);
 
-  const inventoryByVariant = new Map(
-    inventory.map((variant) => [variant.id, variant]),
-  );
-
-  const liveVariants = product.variants.map((variant) => {
-    const liveVariant = inventoryByVariant.get(variant.id);
-
-    if (!liveVariant) {
-      return variant;
-    }
-
-    return {
-      ...variant,
-      size: liveVariant.size ?? undefined,
-      color: liveVariant.color ?? undefined,
-      volumeMl:
-        liveVariant.volume_ml ?? undefined,
-      price:
-        liveVariant.price ?? variant.price,
-      stock: liveVariant.stock,
-    };
-  });
+  /*
+   * IMPORTANT:
+   * The database inventory is the source of truth for storefront variants.
+   *
+   * Admin-created/edited products get fresh variant IDs in
+   * product_variants. Using product.variants here can leave the storefront
+   * with an old/static variant ID, which then makes checkout report:
+   * "Product or variant is no longer available."
+   */
+  const liveVariants =
+    inventory.length > 0
+      ? inventory.map((variant) => ({
+          id: variant.id,
+          size: variant.size ?? undefined,
+          color: variant.color ?? undefined,
+          volumeMl:
+            variant.volume_ml ?? undefined,
+          price:
+            variant.price ?? product.price,
+          stock: variant.stock,
+        }))
+      : product.variants;
 
   const liveBasePrice =
     liveVariants[0]?.price ?? product.price;

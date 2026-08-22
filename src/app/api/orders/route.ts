@@ -64,6 +64,27 @@ export async function POST(request: Request) {
       const variantId =
         asOptionalString(value.variantId);
 
+      const slug =
+        asOptionalString(value.slug);
+
+      const size =
+        asOptionalString(value.size);
+
+      const rawVolumeMl = value.volumeMl;
+      const volumeMl =
+        rawVolumeMl === null ||
+        rawVolumeMl === undefined ||
+        rawVolumeMl === ""
+          ? undefined
+          : Number(rawVolumeMl);
+
+      if (
+        volumeMl !== undefined &&
+        (!Number.isFinite(volumeMl) || volumeMl < 0)
+      ) {
+        throw new Error("Invalid product volume.");
+      }
+
       const quantity = Number(value.quantity);
 
       if (!Number.isInteger(quantity) || quantity < 1) {
@@ -75,6 +96,9 @@ export async function POST(request: Request) {
       return {
         productId,
         variantId,
+        slug,
+        size,
+        volumeMl,
         quantity,
       };
     });
