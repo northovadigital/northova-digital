@@ -78,6 +78,10 @@ export function CartProvider({
   }, [items, ready]);
 
   function addItem(item: AddCartItem) {
+    if (item.maxStock <= 0) {
+      return;
+    }
+
     const key = createCartKey(item);
 
     setItems((currentItems) => {
