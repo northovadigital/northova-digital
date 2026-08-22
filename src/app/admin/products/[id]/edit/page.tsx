@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { isAdminAuthenticated } from "@/lib/server/admin-auth";
 import Link from "next/link";
 import AdminProductEditForm from "@/components/admin/AdminProductEditForm";
 
@@ -8,6 +10,12 @@ export default async function EditProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    redirect("/admin/login");
+  }
+
   const { id } = await params;
 
   return (
