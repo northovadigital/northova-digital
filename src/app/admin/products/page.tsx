@@ -1,3 +1,6 @@
+import { redirect } from "next/navigation";
+import { isAdminAuthenticated } from "@/lib/server/admin-auth";
+
 import Link from "next/link";
 import { getAdminProducts } from "@/lib/server/admin-products";
 import { AdminProductsClient } from "@/components/admin/AdminProductsClient";
@@ -5,6 +8,13 @@ import { AdminProductsClient } from "@/components/admin/AdminProductsClient";
 export const dynamic = "force-dynamic";
 
 export default async function AdminProductsPage() {
+  const authenticated = await isAdminAuthenticated();
+
+  if (!authenticated) {
+    redirect("/admin/login");
+  }
+
+
   const products = await getAdminProducts();
 
   const totalStock = products.reduce(
