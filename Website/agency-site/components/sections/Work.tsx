@@ -116,7 +116,7 @@ export function Work() {
 
               <a
                 className="v2-work-link"
-                href="https://bouboutique-store.fk-boutique.workers.dev"
+                href="https://boutique-store.fk-boutique.workers.dev"
                 target="_blank"
                 rel="noreferrer"
               >
