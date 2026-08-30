@@ -20,8 +20,13 @@ export default function TermsPage() {
             aria-label="Northova Digital home"
           >
             <span className="v2-brand-mark">
-              <span>N</span>
-            </span>
+<img
+              src="/northova-logo.png"
+              alt=""
+              className="v2-actual-logo"
+              aria-hidden="true"
+            />
+          </span>
 
             <span className="v2-brand-copy">
               <strong>Northova</strong>

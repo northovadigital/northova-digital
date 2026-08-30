@@ -12,7 +12,12 @@ export function SiteFooter() {
               aria-label="Northova Digital home"
             >
               <span className="v2-brand-mark">
-                <span>N</span>
+                <img
+                  src="/northova-logo.png"
+                  alt=""
+                  className="v2-brand-logo"
+                  aria-hidden="true"
+                />
               </span>
 
               <span className="v2-brand-copy">
@@ -57,6 +62,47 @@ export function SiteFooter() {
             <Link href="/#contact">Free Website Review</Link>
 
             <span>Available for U.S. projects</span>
+
+            <div className="v3-footer-socials">
+              <a
+                className="v3-footer-social"
+                href="https://www.instagram.com/northovadigital/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Northova Digital on Instagram"
+              >
+                <span className="v3-social-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect
+                      x="3.5"
+                      y="3.5"
+                      width="17"
+                      height="17"
+                      rx="5"
+                    />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle
+                      cx="17.4"
+                      cy="6.7"
+                      r="1"
+                      className="v3-instagram-dot"
+                    />
+                  </svg>
+                </span>
+              </a>
+
+              <span
+                className="v3-footer-social v3-footer-social-disabled"
+                aria-label="Northova Digital on X — coming soon"
+                title="X account coming soon"
+              >
+                <span className="v3-social-icon v3-x-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M5 4h3.9l4.1 5.5L17.4 4H19l-5.2 6.7L19.5 20h-3.9l-4.4-5.9L6.6 20H5l5.4-7L5 4Z" />
+                  </svg>
+                </span>
+              </span>
+            </div>
           </div>
         </div>
 

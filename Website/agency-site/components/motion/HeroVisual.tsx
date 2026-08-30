@@ -18,7 +18,14 @@ export function HeroVisual() {
 
         <div className="v2-browser-page">
           <div className="v2-browser-nav">
-            <div className="v2-mini-logo">N</div>
+            <div className="v2-mini-logo">
+<img
+          src="/northova-logo.png"
+          alt=""
+          className="v2-actual-logo"
+          aria-hidden="true"
+        />
+</div>
 
             <div className="v2-mini-nav">
               <span />

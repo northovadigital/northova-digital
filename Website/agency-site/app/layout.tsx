@@ -35,6 +35,11 @@ export const metadata: Metadata = {
   creator: "Northova Digital",
   publisher: "Northova Digital",
   category: "technology",
+  icons: {
+    icon: "/northova-logo.png",
+    shortcut: "/northova-logo.png",
+    apple: "/northova-logo.png",
+  },
   robots: {
     index: true,
     follow: true,

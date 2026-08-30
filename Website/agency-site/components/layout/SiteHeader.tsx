@@ -30,7 +30,12 @@ export function SiteHeader() {
       <div className="shell v2-header-inner">
         <Link className="v2-brand" href="/" aria-label="Northova Digital home">
           <span className="v2-brand-mark">
-            <span>N</span>
+            <img
+              src="/northova-logo.png"
+              alt=""
+              className="v2-brand-logo"
+              aria-hidden="true"
+            />
           </span>
 
           <span className="v2-brand-copy">
