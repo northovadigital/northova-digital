@@ -17,13 +17,58 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    "https://boutique-store.fk-boutique.workers.dev",
+  ),
+
   title: {
-    default: storeConfig.name,
-    template: `%s | ${storeConfig.name}`,
+    default: "Farhana & Kulsoom | F&K Boutique Karachi",
+    template: "%s | Farhana & Kulsoom",
   },
-  description: storeConfig.description,
-  applicationName: storeConfig.name,
+
+  description:
+    "Farhana & Kulsoom (F&K Boutique) — a Karachi, Pakistan boutique for women's fashion, fragrances and home essentials.",
+
+  keywords: [
+    "Farhana & Kulsoom",
+    "Farhana and Kulsoom",
+    "F&K Boutique",
+    "F&K boutique Karachi",
+    "Farhana Kulsoom boutique",
+    "boutique Karachi",
+    "women's fashion Karachi",
+    "Pakistani boutique",
+    "fragrances Karachi",
+    "home essentials Karachi",
+  ],
+
+  applicationName: "Farhana & Kulsoom",
   category: "shopping",
+
+  alternates: {
+    canonical: "/",
+  },
+
+  openGraph: {
+    title: "Farhana & Kulsoom | F&K Boutique Karachi",
+    description:
+      "Women's fashion, fragrances and home essentials curated in Karachi, Pakistan.",
+    locale: "en_PK",
+    type: "website",
+    siteName: "Farhana & Kulsoom",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Farhana & Kulsoom | F&K Boutique Karachi",
+    description:
+      "Women's fashion, fragrances and home essentials curated in Karachi, Pakistan.",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

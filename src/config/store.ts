@@ -10,9 +10,11 @@ export const storeConfig: StoreConfig = {
   country: "Pakistan",
   city: "Karachi",
   contact: {
-    phone: "",
-    whatsapp: "",
+    phone: "03708878409",
+    secondaryPhone: "03362276994",
+    whatsapp: "03708878409",
     email: "",
+    address: "University Road, Karachi, Pakistan",
   },
   socials: {
     instagram: "",

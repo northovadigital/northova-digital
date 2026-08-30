@@ -28,5 +28,12 @@
 			"database_name": "fk-boutique-db",
 			"database_id": "dfad0100-edeb-42a5-8e9b-ca8ff5ec1393"
 		}
+	],
+	"r2_buckets": [
+		{
+			"bucket_name": "fk-boutique-products",
+			"binding": "fk_boutique_products",
+			"remote": true
+		}
 	]
 }

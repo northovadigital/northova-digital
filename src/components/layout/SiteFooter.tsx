@@ -53,10 +53,40 @@ export function SiteFooter() {
             </h3>
 
             <div className="mt-4 space-y-3 text-sm leading-6 text-[#625c55]">
+              <Link
+                href="/privacy-policy"
+                className="block transition hover:text-[#927447]"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                href="/terms"
+                className="block transition hover:text-[#927447]"
+              >
+                Terms & Conditions
+              </Link>
+              <Link
+                href="/exchange-policy"
+                className="block transition hover:text-[#927447]"
+              >
+                Exchange Policy
+              </Link>
+              <a
+                href="tel:03708878409"
+                className="block transition hover:text-[#927447]"
+              >
+                0370 8878409
+              </a>
+              <a
+                href="tel:03362276994"
+                className="block transition hover:text-[#927447]"
+              >
+                0336 2276994
+              </a>
+              <p>Karachi delivery — Free delivery across Karachi</p>
               <p>Cash on delivery</p>
               <p>Direct order confirmation</p>
               <p>Karachi delivery</p>
-              <p>WhatsApp support coming soon</p>
             </div>
           </div>
         </div>

@@ -168,6 +168,29 @@ export default function AdminProductEditForm({ productId }: Props) {
     );
   }
 
+  async function uploadImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/admin/uploads", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = (await response.json()) as {
+      url?: string;
+      error?: string;
+    };
+
+    if (!response.ok || !result.url) {
+      throw new Error(
+        result.error ?? "Unable to upload image.",
+      );
+    }
+
+    return result.url;
+  }
+
   async function handleImageChange(
     event: React.ChangeEvent<HTMLInputElement>,
   ) {
@@ -184,65 +207,42 @@ export default function AdminProductEditForm({ productId }: Props) {
     }
 
     try {
-      const processed = await Promise.all(
+      setError("");
+
+      const uploadedUrls = await Promise.all(
         files.map(async (file) => {
-          if (!file.type.startsWith("image/")) {
-            throw new Error("Please select valid image files.");
+          if (
+            ![
+              "image/jpeg",
+              "image/png",
+              "image/webp",
+            ].includes(file.type)
+          ) {
+            throw new Error(
+              "Only JPG, PNG or WebP images are allowed.",
+            );
           }
 
-          if (file.size > 8 * 1024 * 1024) {
-            throw new Error("Each image must be smaller than 8MB.");
+          if (file.size <= 0 || file.size > 8 * 1024 * 1024) {
+            throw new Error(
+              "Each image must be smaller than 8MB.",
+            );
           }
 
-          const bitmap = await createImageBitmap(file);
-          const maxSize = 1600;
-
-          const scale = Math.min(
-            1,
-            maxSize / Math.max(bitmap.width, bitmap.height),
-          );
-
-          const canvas = document.createElement("canvas");
-
-          canvas.width = Math.max(
-            1,
-            Math.round(bitmap.width * scale),
-          );
-
-          canvas.height = Math.max(
-            1,
-            Math.round(bitmap.height * scale),
-          );
-
-          const context = canvas.getContext("2d");
-
-          if (!context) {
-            throw new Error("Unable to process image.");
-          }
-
-          context.drawImage(
-            bitmap,
-            0,
-            0,
-            canvas.width,
-            canvas.height,
-          );
-
-          return canvas.toDataURL("image/jpeg", 0.84);
+          return uploadImage(file);
         }),
       );
 
       setImageUrls((current) =>
-        [...current, ...processed].slice(0, 8),
+        [...current, ...uploadedUrls].slice(0, 8),
       );
 
-      setError("");
       event.target.value = "";
     } catch (uploadError) {
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "Unable to process these images.",
+          : "Unable to upload images.",
       );
       event.target.value = "";
     }

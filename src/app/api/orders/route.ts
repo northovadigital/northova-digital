@@ -5,6 +5,7 @@ import {
   InsufficientStockError,
   InventoryChangedError,
 } from "@/lib/server/orders";
+import { sendNewOrderWhatsAppNotification } from "@/lib/server/whatsapp";
 
 type RequestBody = {
   customerName?: unknown;
@@ -136,6 +137,25 @@ export async function POST(request: Request) {
       city: "Karachi",
       notes: asOptionalString(body.notes),
       items,
+    });
+
+    // Notify the F&K WhatsApp number after the order is safely created.
+    // Notification failure must never make the customer's order fail.
+    void sendNewOrderWhatsAppNotification({
+      order_number: order.orderNumber,
+      customer_name: asRequiredString(body.customerName, "Customer name"),
+      customer_phone: asRequiredString(body.customerPhone, "Phone number"),
+      total: order.total,
+      items: order.items.map((item) => ({
+        name: item.productName,
+        quantity: item.quantity,
+        price: item.unitPrice,
+      })),
+    }).catch((error) => {
+      console.error(
+        "Unexpected WhatsApp order notification error:",
+        error,
+      );
     });
 
     return NextResponse.json(
