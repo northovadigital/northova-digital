@@ -1,0 +1,59 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": ".open-next/worker.js",
+<<<<<<< HEAD
+	"name": "cakeybakey",
+=======
+	"name": "boutique-store",
+>>>>>>> 5455781af8973d5af7f3babcd118fd551cdde8e2
+	"compatibility_date": "2026-08-14",
+	"compatibility_flags": [
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+<<<<<<< HEAD
+			"service": "cakeybakey"
+=======
+			"service": "boutique-store"
+>>>>>>> 5455781af8973d5af7f3babcd118fd551cdde8e2
+		}
+	],
+	"images": {
+		"binding": "IMAGES"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+<<<<<<< HEAD
+			"binding": "cakeybakey_db",
+			"database_name": "cakeybakey-db",
+			"database_id": "40d2c203-755a-4afb-8b10-3ab578b10cde",
+			"remote": true
+=======
+			"binding": "fk_boutique_db",
+			"database_name": "fk-boutique-db",
+			"database_id": "dfad0100-edeb-42a5-8e9b-ca8ff5ec1393"
+>>>>>>> 5455781af8973d5af7f3babcd118fd551cdde8e2
+		}
+	],
+	"r2_buckets": [
+		{
+<<<<<<< HEAD
+			"bucket_name": "cakeybakey-products",
+			"binding": "cakeybakey_products",
+=======
+			"bucket_name": "fk-boutique-products",
+			"binding": "fk_boutique_products",
+>>>>>>> 5455781af8973d5af7f3babcd118fd551cdde8e2
+			"remote": true
+		}
+	]
+}
