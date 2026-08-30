@@ -159,9 +159,105 @@ export async function getProductCatalogue(): Promise<Product[]> {
 export async function getProductBySlug(
   slug: string,
 ): Promise<Product | undefined> {
-  const products = await getProductCatalogue();
+  const db = await getDatabaseAsync();
 
-  return products.find((product) => product.slug === slug);
+  const productResult = await db
+    .prepare(`
+      SELECT
+        id,
+        slug,
+        name,
+        description,
+        category,
+        base_price,
+        status,
+        featured,
+        image_url,
+        image_urls,
+        created_at
+      FROM products
+      WHERE slug = ?
+      LIMIT 1
+    `)
+    .bind(slug)
+    .all<ProductRow>();
+
+  const product = productResult.results[0];
+
+  if (!product) {
+    return undefined;
+  }
+
+  const variantsResult = await db
+    .prepare(`
+      SELECT
+        id,
+        product_id,
+        size,
+        color,
+        volume_ml,
+        price,
+        stock
+      FROM product_variants
+      WHERE product_id = ?
+      ORDER BY rowid ASC
+    `)
+    .bind(product.id)
+    .all<InventoryVariantRow>();
+
+  const variants = variantsResult.results.map((variant) => ({
+    id: variant.id,
+    size: variant.size ?? undefined,
+    color: variant.color ?? undefined,
+    volumeMl: variant.volume_ml ?? undefined,
+    price: variant.price ?? undefined,
+    stock: variant.stock,
+  }));
+
+  const urls: string[] = [];
+
+  if (product.image_url) {
+    urls.push(product.image_url);
+  }
+
+  if (product.image_urls) {
+    try {
+      const parsed = JSON.parse(product.image_urls);
+
+      if (Array.isArray(parsed)) {
+        for (const url of parsed) {
+          if (
+            typeof url === "string" &&
+            url.trim() &&
+            !urls.includes(url)
+          ) {
+            urls.push(url);
+          }
+        }
+      }
+    } catch {
+      // Ignore malformed gallery JSON.
+    }
+  }
+
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    description: product.description,
+    price: variants[0]?.price ?? product.base_price,
+    category: product.category,
+    imageUrl: product.image_url ?? undefined,
+    images: urls.map((url, index) => ({
+      id: `${product.id}-image-${index}`,
+      url,
+      alt: `${product.name} image ${index + 1}`,
+    })),
+    variants,
+    status: normalizeStatus(product.status),
+    featured: Boolean(product.featured),
+    createdAt: product.created_at,
+  };
 }
 
 export async function getProductInventory(productId: string) {

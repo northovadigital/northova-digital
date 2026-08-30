@@ -1,7 +1,9 @@
 export type StoreContact = {
   phone: string;
+  secondaryPhone?: string;
   whatsapp: string;
   email: string;
+  address?: string;
 };
 
 export type StoreSocialLinks = {

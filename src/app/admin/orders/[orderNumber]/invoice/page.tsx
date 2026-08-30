@@ -212,7 +212,7 @@ export default function AdminOrderInvoicePage() {
           <header className="flex flex-col justify-between gap-6 border-b border-[#e5ded4] px-7 py-7 sm:flex-row sm:items-start">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#9a7c50]">
-                Boutique Store
+                F&K Boutique
               </p>
 
               <h1 className="mt-2 font-serif text-4xl text-[#181512]">

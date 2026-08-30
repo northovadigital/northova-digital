@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,10 +9,9 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ProductVisual } from "@/components/storefront/ProductVisual";
 import { ProductGallery } from "@/components/storefront/ProductGallery";
 import { ProductVariantSelector } from "@/components/storefront/ProductVariantSelector";
-import {
-  getProductBySlug,
-  getProductInventory,
-} from "@/lib/server/catalogue";
+import { getProductBySlug } from "@/lib/server/catalogue";
+
+const getProductBySlugCached = cache(getProductBySlug);
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +32,7 @@ export async function generateMetadata({
   params: ProductPageParams;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlugCached(slug);
 
   if (!product) {
     return {
@@ -52,39 +52,18 @@ export default async function ProductPage({
   params: ProductPageParams;
 }) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductBySlugCached(slug);
 
   if (!product) {
     notFound();
   }
 
-  const inventory = await getProductInventory(product.id);
-
   /*
-   * IMPORTANT:
-   * The database inventory is the source of truth for storefront variants.
-   *
-   * Admin-created/edited products get fresh variant IDs in
-   * product_variants. Using product.variants here can leave the storefront
-   * with an old/static variant ID, which then makes checkout report:
-   * "Product or variant is no longer available."
+   * getProductBySlug now returns the product's live variants from the
+   * targeted product query, so avoid a second inventory query.
    */
-  const liveVariants =
-    inventory.length > 0
-      ? inventory.map((variant) => ({
-          id: variant.id,
-          size: variant.size ?? undefined,
-          color: variant.color ?? undefined,
-          volumeMl:
-            variant.volume_ml ?? undefined,
-          price:
-            variant.price ?? product.price,
-          stock: variant.stock,
-        }))
-      : product.variants;
-
-  const liveBasePrice =
-    liveVariants[0]?.price ?? product.price;
+  const liveVariants = product.variants;
+  const liveBasePrice = liveVariants[0]?.price ?? product.price;
 
   return (
     <>

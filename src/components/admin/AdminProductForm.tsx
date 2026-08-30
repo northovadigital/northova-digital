@@ -179,75 +179,83 @@ export default function AdminProductForm({
   }
 
 
+  async function uploadImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/admin/uploads", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = (await response.json()) as {
+      url?: string;
+      error?: string;
+    };
+
+    if (!response.ok || !result.url) {
+      throw new Error(
+        result.error ?? "Unable to upload image.",
+      );
+    }
+
+    return result.url;
+  }
+
   async function handleImageChange(
     event: React.ChangeEvent<HTMLInputElement>,
   ) {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
 
-    if (!file) {
+    if (files.length === 0) {
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
-      setError("Please select a valid image file.");
-      return;
-    }
-
-    if (file.size > 8 * 1024 * 1024) {
-      setError("Image must be smaller than 8MB.");
+    if (imageUrls.length + files.length > 8) {
+      setError("You can have up to 8 product images.");
+      event.target.value = "";
       return;
     }
 
     try {
-      const bitmap = await createImageBitmap(file);
-      const maxSize = 1200;
+      setError("");
 
-      const scale = Math.min(
-        1,
-        maxSize / Math.max(bitmap.width, bitmap.height),
+      const uploadedUrls = await Promise.all(
+        files.map(async (file) => {
+          if (
+            ![
+              "image/jpeg",
+              "image/png",
+              "image/webp",
+            ].includes(file.type)
+          ) {
+            throw new Error(
+              "Only JPG, PNG or WebP images are allowed.",
+            );
+          }
+
+          if (file.size <= 0 || file.size > 8 * 1024 * 1024) {
+            throw new Error(
+              "Each image must be smaller than 8MB.",
+            );
+          }
+
+          return uploadImage(file);
+        }),
       );
 
-      const canvas = document.createElement("canvas");
-
-      canvas.width = Math.max(
-        1,
-        Math.round(bitmap.width * scale),
+      setImageUrls((current) =>
+        [...current, ...uploadedUrls].slice(0, 8),
       );
 
-      canvas.height = Math.max(
-        1,
-        Math.round(bitmap.height * scale),
+      event.target.value = "";
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error
+          ? uploadError.message
+          : "Unable to upload images.",
       );
-
-      const context = canvas.getContext("2d");
-
-      if (!context) {
-        throw new Error("Unable to process image.");
-      }
-
-      context.drawImage(
-        bitmap,
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-      );
-
-      const dataUrl = canvas.toDataURL(
-        "image/jpeg",
-        0.82,
-      );
-
-      setImageUrls((current) => {
-        if (current.length >= 8) {
-          return current;
-        }
-
-        return [...current, dataUrl];
-      });
-      setError(null);
-    } catch {
-      setError("Unable to process this image.");
+      event.target.value = "";
     }
   }
 
